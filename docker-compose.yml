@@ -4,21 +4,23 @@ services:
     image: wordpress
     restart: always
     ports:
-      - 8080:80
+      - 80:80
+      - 8443:443  # Expose port 443 for HTTPS
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: exampleuser
-      WORDPRESS_DB_PASSWORD: examplepass
-      WORDPRESS_DB_NAME: exampledb
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: $PASSWORD # Gets set by init script, exists in dbPassword.txt
+      WORDPRESS_DB_NAME: wp_db
     volumes:
       - /home/ubuntu/volumes/wordpress:/var/www/html
+
   db:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_DATABASE: exampledb
-      MYSQL_USER: exampleuser
-      MYSQL_PASSWORD: examplepass
+      MYSQL_DATABASE: wp_db
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: $PASSWORD # gets set by init script
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - /home/ubuntu/volumes/db:/var/lib/mysql
