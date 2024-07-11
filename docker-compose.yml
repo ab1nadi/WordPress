@@ -1,26 +1,49 @@
 version: '3.1'
 services:
+  swag:
+    image: lscr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - URL=eurekaroofingutah.com
+      - SUBDOMAINS=www,
+      - VALIDATION=http
+    volumes:
+      - ./volumes/swag/config:/config
+    ports:
+      - 443:443
+      - 80:80 #optional
+    restart: unless-stopped
+    
   wordpress:
     image: wordpress
     restart: always
     ports:
-      - 80:80
-      - 8443:443  # Expose port 443 for HTTPS
+      - 8080:80
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wp_user
-      WORDPRESS_DB_PASSWORD: $PASSWORD # Gets set by init script, exists in dbPassword.txt
+      WORDPRESS_DB_PASSWORD: "BadPassword" # Gets set by init script, exists in dbPassword.txt
       WORDPRESS_DB_NAME: wp_db
     volumes:
       - ./volumes/wordpress:/var/www/html
-
+    networks:
+      - wordpressNetwork  # Specify the custom network
   db:
     image: mysql:8.0
     restart: always
     environment:
       MYSQL_DATABASE: wp_db
       MYSQL_USER: wp_user
-      MYSQL_PASSWORD: $PASSWORD # gets set by init script
+      MYSQL_PASSWORD: "BadPassword" # gets set by init script
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - ./volumes/db:/var/lib/mysql
+  
+networks:
+  wordpressNetwork:
+    driver: bridge
