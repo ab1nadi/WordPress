@@ -8,8 +8,8 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/London
-      - URL=eurekaroofingutah.com
+      - TZ=America/Denver
+      - URL=wordpress.eurekaroofingutah.com
       - SUBDOMAINS=www,
       - VALIDATION=http
     volumes:
@@ -18,7 +18,6 @@ services:
       - 443:443
       - 80:80 #optional
     restart: unless-stopped
-    
   wordpress:
     image: wordpress
     restart: always
@@ -31,8 +30,6 @@ services:
       WORDPRESS_DB_NAME: wp_db
     volumes:
       - ./volumes/wordpress:/var/www/html
-    networks:
-      - wordpressNetwork  # Specify the custom network
   db:
     image: mysql:8.0
     restart: always
@@ -43,7 +40,3 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - ./volumes/db:/var/lib/mysql
-  
-networks:
-  wordpressNetwork:
-    driver: bridge
